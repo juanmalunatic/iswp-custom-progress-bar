@@ -1,0 +1,342 @@
+<?php
+
+/**
+ * The public-facing functionality of the plugin.
+ *
+ * @link       https://lunalopez.ml
+ * @since      1.0.0
+ *
+ * @package    Iswp_Custom_Progress_Bar
+ * @subpackage Iswp_Custom_Progress_Bar/public
+ */
+
+/**
+ * The public-facing functionality of the plugin.
+ *
+ * Defines the plugin name, version, and two examples hooks for how to
+ * enqueue the public-facing stylesheet and JavaScript.
+ *
+ * @package    Iswp_Custom_Progress_Bar
+ * @subpackage Iswp_Custom_Progress_Bar/public
+ * @author     Juan Manuel Luna López <lunalopezjm@gmail.com>
+ */
+class Iswp_Custom_Progress_Bar_Public
+{
+
+    /**
+     * The ID of this plugin.
+     *
+     * @since    1.0.0
+     * @access   private
+     * @var      string $plugin_name The ID of this plugin.
+     */
+    private $plugin_name;
+
+    /**
+     * The version of this plugin.
+     *
+     * @since    1.0.0
+     * @access   private
+     * @var      string $version The current version of this plugin.
+     */
+    private $version;
+
+    /**
+     * The plugin options
+     *
+     * @since  1.0.0
+     * @access private
+     * @var    mixed $plugin_options Stored options for this plugin
+     */
+    private $plugin_options;
+
+    /**
+     * Current user ID as reported by get_current_user_id. 0 if not logged in.
+     *
+     * @since  1.0.0
+     * @access private
+     * @var    integer $user_id Current user id
+     */
+    private $user_id;
+
+    /**
+     * Initialize the class and set its properties.
+     *
+     * @param string $plugin_name The name of the plugin.
+     * @param string $version The version of this plugin.
+     * @since    1.0.0
+     */
+    public function __construct($plugin_name, $version)
+    {
+
+        $this->plugin_name = $plugin_name;
+        $this->version = $version;
+
+    }
+
+    public function initialize()
+    {
+        $this->plugin_options = get_option($this->plugin_name);
+        $this->user_id = get_current_user_id();
+    }
+
+    /**
+     * Register the stylesheets for the public-facing side of the site.
+     *
+     * @since    1.0.0
+     */
+    public function enqueue_styles()
+    {
+
+        /**
+         * This function is provided for demonstration purposes only.
+         *
+         * An instance of this class should be passed to the run() function
+         * defined in Iswp_Custom_Progress_Bar_Loader as all of the hooks are defined
+         * in that particular class.
+         *
+         * The Iswp_Custom_Progress_Bar_Loader will then create the relationship
+         * between the defined hooks and the functions defined in this
+         * class.
+         */
+
+        wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/iswp-custom-progress-bar-public.css', array(), $this->version, 'all');
+
+    }
+
+    /**
+     * Register the JavaScript for the public-facing side of the site.
+     *
+     * @since    1.0.0
+     */
+    public function enqueue_scripts()
+    {
+
+        /**
+         * This function is provided for demonstration purposes only.
+         *
+         * An instance of this class should be passed to the run() function
+         * defined in Iswp_Custom_Progress_Bar_Loader as all of the hooks are defined
+         * in that particular class.
+         *
+         * The Iswp_Custom_Progress_Bar_Loader will then create the relationship
+         * between the defined hooks and the functions defined in this
+         * class.
+         */
+
+        wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/iswp-custom-progress-bar-public.js', array('jquery'), $this->version, false);
+
+    }
+
+    // end Boilerplate
+    // ------------------------------------------------------------------------
+
+
+    // Shortcode functions
+
+    public function register_shortcodes()
+    {
+        add_shortcode('iswp_custom_progress_bar', array($this, 'progress_bar_draw'));
+    }
+
+    public function progress_bar_draw(): string
+    {
+        // This function is currently only used on pages in which the user is logged in.
+        //  TODO? Handle non logged in user.
+
+        $steps = [
+            $this->step1(),
+            $this->step2(),
+            $this->step3(),
+            $this->step4(),
+            $this->step5(),
+        ];
+
+        return $this->pb_div_render($steps);
+    }
+
+    private function pb_div_render($steps) : string
+    {
+        $template = "";
+
+        $template .= "
+            <div id='iswpcpb-holder' style='display:none'>
+                <div class='iswpcpb-title'>
+                    {$this->plugin_options['title']}
+                </div>
+                <div class='iwspcpb-progress'>
+	                <div class='iswpcpb-bar'>";
+
+        // Steps
+        $counter = 0;
+        $bgcolor = $this->plugin_options['bgcolor'];
+        foreach ($steps as $key => $completed) {
+            $stepnum = $key + 1;
+
+            $style  = 'background-color: ';
+            $style .= $completed ? $bgcolor : 'transparent';
+
+            $template .= "
+                        <div
+                            class='iswpcpb-step'
+                            id='iswpcpb-step-{$stepnum}'
+                            style='{$style}'
+                        >
+                            <span class='iswpcpb-number'>
+                                {$stepnum}
+                            </span>
+                        </div>";
+
+            // Keep outputting steps until one is missing
+            if ($completed) {
+                $counter++;
+            }
+        }
+        $template .= "
+	                </div>"; // end bar
+
+        // Text
+        $percent = round($counter/5*100, 0);
+        $template .= "
+                     <div class='iswpcpb-text'>{$percent}% Complete</div>";
+
+	    $template .= "
+                </div>
+            </div>";
+
+        return $template;
+    }
+
+    // Helper functions
+
+    /**
+     * Check whether a given user has finished a course with a given ID
+     */
+    private function user_completed_course($user_id, $course_id): bool
+    {
+        $completed_timestamp = $this->learndash_user_get_course_completed($user_id, $course_id);
+        if ($completed_timestamp > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private function user_passed_quiz($user_id, $quiz_id): bool
+    {
+        // Quiz must be BOTH completed AND passed for the progress bar to advance
+        $quiz_complete = learndash_is_quiz_complete($user_id, $quiz_id);
+        return $quiz_complete;
+    }
+
+    private function user_submitted_form($user_id, $form_id): bool
+    {
+        // Find entries for the user
+        $search_criteria['field_filters'][] = [  // Filter by user
+            'key' => 'created_by',
+            'value' => (string)$user_id,
+        ];
+
+        $search_criteria['field_filters'][] = [ // Only active (non-deleted) submissions
+            'key' => 'status',
+            'value' => 'active',
+        ];
+
+        $sorting = [
+            'key' => 'date_created',
+            'direction' => 'DESC',
+            'is_numeric' => false
+        ];
+
+        $total_count = 0;
+        $entries = GFAPI::get_entries($form_id, $search_criteria, $sorting, null, $total_count);
+
+        if ($total_count > 0) {
+            return true;
+        } else {
+            return false;
+        }
+
+        // We could optionally check if the field has been filled, getting the entry.
+        // Not done yet as the form has only one field: Submitting == filling the field.
+    }
+
+    // Step functions
+
+    private function step1(): bool
+    {
+        $quiz_id = (int)$this->plugin_options['s1'];
+        $state = $this->user_passed_quiz($this->user_id, $quiz_id);
+        return $state;
+    }
+
+    private function step2(): bool
+    {
+        $course_id = (int)$this->plugin_options['s2'];
+        $state = $this->user_completed_course($this->user_id, $course_id);
+        return $state;
+    }
+
+    private function step3(): bool
+    {
+        $quiz_id = (int)$this->plugin_options['s3'];
+        $state = $this->user_passed_quiz($this->user_id, $quiz_id);
+        return $state;
+    }
+
+    private function step4(): bool
+    {
+        $form_id = (int)$this->plugin_options['s4'];
+        $state = $this->user_submitted_form($this->user_id, $form_id);
+        return $state;
+    }
+
+    private function step5(): bool
+    {
+        $fees_paid = get_the_author_meta('_wsp_fees_paid', $this->user_id);
+        if ($fees_paid == "" || is_null($fees_paid)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
+    function learndash_user_get_course_completed($user_id = 0, $course_id = 0)
+    {
+        $completed_on_timestamp = 0;
+        if ((!empty($user_id)) && (!empty($course_id))) {
+            $completed_on = get_user_meta($user_id, 'course_completed_' . $course_id, true);
+
+            if (empty($completed_on)) {
+                $activity_query_args = array(
+                    'post_ids' => $course_id,
+                    'user_ids' => $user_id,
+                    'activity_type' => 'course',
+                    'per_page' => 1,
+                );
+
+                $activity = learndash_reports_get_activity($activity_query_args);
+                //error_log('activity<pre>'. print_r($activity, true) .'</pre>');
+                if (!empty($activity['results'])) {
+                    foreach ($activity['results'] as $activity_item) {
+                        if (property_exists($activity_item, 'activity_completed')) {
+                            $completed_on_timestamp = $activity_item->activity_completed;
+
+                            // To make the next check easier we update the user meta.
+                            update_user_meta($user_id, 'course_completed_' . $course_id, $completed_on_timestamp);
+                        }
+                    }
+                }
+            } else {
+                if ($completed_on > 0) {
+                    $completed_on_timestamp = $completed_on;
+                } else {
+                    return 0;
+                }
+            }
+        }
+
+        return $completed_on_timestamp;
+    }
+}
