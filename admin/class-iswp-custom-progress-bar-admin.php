@@ -78,6 +78,7 @@ class Iswp_Custom_Progress_Bar_Admin
          */
 
         wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/iswp-custom-progress-bar-admin.css', array(), $this->version, 'all');
+        wp_enqueue_style('jquery-ui-css', plugin_dir_url(__FILE__) . 'css/jquery-ui.min--1.11.4.css');
     }
 
     /**
@@ -101,6 +102,7 @@ class Iswp_Custom_Progress_Bar_Admin
          */
 
         wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/iswp-custom-progress-bar-admin.js', array('jquery'), $this->version, false);
+        wp_enqueue_script('jquery-ui-datepicker');
     }
 
     // -------------------------------------------------------------------------
@@ -233,44 +235,101 @@ class Iswp_Custom_Progress_Bar_Admin
 
     public function extra_user_profile_fields($user)
     {
-        $fees_paid = get_the_author_meta('_wsp_fees_paid', $user->ID);
+        $user_paid    = get_the_author_meta('_wsp_payment_received', $user->ID);
+        $payment_date = get_the_author_meta('_wsp_payment_date', $user->ID);
 
+        // Payment
         $checked = "checked";
-        if (is_null($fees_paid) || $fees_paid == "") {
+        if (is_null($user_paid) || $user_paid == "") {
             $checked = "";
         }
 
         ?>
         <h3> ISWP Progress Bar </h3>
 
+        <p>
+            These fields indicate whether the user has paid the required fees for the WSP Certification.
+        </p>
+
         <fieldset>
-            <legend class="screen-reader-text">
-                <span>User has paid the required fees for the WSP Certification.</span>
-            </legend>
-            <label for="_wsp_fees_paid">
-                <input type="checkbox"
-                       id="_wsp_fees_paid"
-                       name="_wsp_fees_paid"
-                    <?= $checked ?>
-                />
-                <span>
-                    <?php esc_attr_e('User has paid the required fees for the WSP Certification.', $this->plugin_name); ?>
-                </span>
-            </label>
+
+            <table class="form-table">
+                <tbody>
+
+                    <!-- User has paid the fees -->
+                    <tr>
+                        <th>
+                            User paid the fees
+                        </th>
+                        <td>
+                            <legend class="screen-reader-text">
+                                    <span>
+                                        User paid the fees.
+                                    </span>
+                            </legend>
+                            <label for     ="_wsp_payment_received">
+                                <input   id="_wsp_payment_received"
+                                         name="_wsp_payment_received"
+                                         type="checkbox"
+                                    <?= $checked ?>
+                                />
+                                <br />
+                                <span class="description">
+                                        <?php esc_attr_e('Check if the user has paid.', $this->plugin_name); ?>
+                                </span>
+                            </label>
+                        </td>
+                    </tr>
+
+                    <!-- Date of payment -->
+                    <tr>
+                        <th>
+                            Date of last payment
+                        </th>
+                        <td>
+                            <legend class="screen-reader-text">
+                                <span>
+                                    Date of last payment (mm-dd-yyyy).
+                                </span>
+                            </legend>
+                            <label for     ="_wsp_payment_date">
+                                <input   id="_wsp_payment_date"
+                                         name="_wsp_payment_date"
+
+                                         type  = "text"
+                                         class = "jqueryui-datepicker"
+                                         value = "<?=$payment_date?>"
+                                />
+                                <br />
+                                <span class="description">
+                                    <?php esc_attr_e('Input the date in a mm-dd-yyyy format.', $this->plugin_name); ?>
+                                </span>
+                            </label>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+
         </fieldset>
         <?php
     }
 
-    public function save_extra_user_profile_fields($user_id)
+    public function save_extra_user_profile_fields($user_id) : bool
     {
         if (empty($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'update-user_' . $user_id)) {
-            return null; // was return
+            return false; // was return
         }
 
         if (!current_user_can('edit_user', $user_id)) {
             return false;
         }
 
-        update_user_meta($user_id, '_wsp_fees_paid', $_POST['_wsp_fees_paid']);
+        // Payment received (Checkbox)
+        update_user_meta($user_id, '_wsp_payment_received', $_POST['_wsp_payment_received']);
+
+        // Payment date (jQuery UI datepicker)
+        update_user_meta($user_id, '_wsp_payment_date', $_POST['_wsp_payment_date']);
+        return true;
     }
 }

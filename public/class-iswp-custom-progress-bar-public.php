@@ -170,10 +170,10 @@ class Iswp_Custom_Progress_Bar_Public
                 'form_id'   => (int)$this->plugin_options['s4--form_id'],
             ],
             [
-                'code'      => 'Step 5',
-                'name'      => $this->plugin_options['s5--name'],
-                'link'      => $this->plugin_options['s5--link'],
-                'fees_paid' => get_the_author_meta('_wsp_fees_paid', $this->user_id),
+                'code' => 'Step 5',
+                'name' => $this->plugin_options['s5--name'],
+                'link' => $this->plugin_options['s5--link'],
+                'paid' => get_the_author_meta('_wsp_payment_received', $this->user_id),
             ]
         ];
 
@@ -359,8 +359,8 @@ class Iswp_Custom_Progress_Bar_Public
 
     private function checkStep5($step_data): bool
     {
-        $fees_paid = $step_data['fees_paid'];
-        if ($fees_paid == "" || is_null($fees_paid)) {
+        $user_paid = $step_data['paid'];
+        if ($user_paid == "" || is_null($user_paid)) {
             return false;
         } else {
             return true;

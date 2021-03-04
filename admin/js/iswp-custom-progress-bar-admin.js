@@ -28,5 +28,30 @@
      * Although scripts in the WordPress core, Plugins and Themes may be
      * practising this, we should strive to set a better example in our own work.
      */
+    $(function() {
+
+        // Activate datepicker
+        $('.jqueryui-datepicker').datepicker({
+            dateFormat : 'mm-dd-yy',
+            changeYear: true,
+            changeMonth: true,
+        });
+
+        // Function that sets the correct state for the date
+        let setDatepickerState = function () {
+            let is_checked = $("#_wsp_payment_received").is(":checked");
+            let datepicker = $("#_wsp_payment_date");
+
+            if (is_checked) {
+                $(datepicker).datepicker("option", "disabled", false);
+            } else {
+                $(datepicker).datepicker("option", "disabled", true);
+            }
+        }
+        // Run once, on load
+        setDatepickerState();
+        // Run on every click
+        $("#_wsp_payment_received").click(setDatepickerState);
+    });
 
 })(jQuery);
