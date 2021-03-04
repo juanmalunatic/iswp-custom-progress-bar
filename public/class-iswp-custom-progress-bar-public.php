@@ -142,15 +142,50 @@ class Iswp_Custom_Progress_Bar_Public
     public function progress_bar_draw(): string
     {
         // This function is currently only used on pages in which the user is logged in.
-        //  TODO? Handle non logged in user.
 
+        // Setup data
         $steps = [
-            $this->step1(),
-            $this->step2(),
-            $this->step3(),
-            $this->step4(),
-            $this->step5(),
+            [
+                'code'      => 'Step 1',
+                'name'      => 'Basic Knowledge Test',
+                'link'      => 'courses/iswp-basic-knowledge-test',
+                'quiz_id'   => (int)$this->plugin_options['s1'],
+            ],
+            [
+                'code'      => 'Step 2',
+                'name'      => 'Ethics and Professionalism Course',
+                'link'      => 'courses/iswp-ethics-and-professionalism-course',
+                'course_id' => (int)$this->plugin_options['s2'],
+            ],
+            [
+                'code'      => 'Step 3',
+                'name'      => 'Ethics and Professionalism Test',
+                'link'      => 'courses/iswp-pre-test',
+                'quiz_id'   => (int)$this->plugin_options['s3'],
+            ],
+            [
+                'code'      => 'Step 4',
+                'name'      => 'Supporting Documents',
+                'link'      => 'wsp-certification-initial-form',
+                'form_id'   => (int)$this->plugin_options['s4'],
+            ],
+            [
+                'code'      => 'Step 5',
+                'name'      => 'Payment',
+                'fees_paid' => get_the_author_meta('_wsp_fees_paid', $this->user_id),
+            ]
         ];
+
+        // Validate if each step satisfies the completion criteria
+        foreach ($steps as $key => $data) {
+            // This is basically the next line in a loop:
+            // $steps[0]['completed'] = $this->checkStep1($data)
+            $num = $key + 1;
+            $steps[$key]['completed'] = $this->{"checkStep".$num}($data);
+        }
+
+        // Add a link for every step
+
 
         return $this->pb_div_render($steps);
     }
@@ -170,8 +205,11 @@ class Iswp_Custom_Progress_Bar_Public
         // Steps
         $counter = 0;
         $bgcolor = $this->plugin_options['bgcolor'];
-        foreach ($steps as $key => $completed) {
-            $stepnum = $key + 1;
+        foreach ($steps as $key => $step_data) {
+            $stepnum   = $key + 1;
+            $completed = $step_data['completed'];
+            $name      = $step_data['name'];
+            $link      = $this->base_url() . '/' . $step_data['link'];
 
             $style  = 'background-color: ';
             $style .= $completed ? $bgcolor : 'transparent';
@@ -182,9 +220,26 @@ class Iswp_Custom_Progress_Bar_Public
                             id='iswpcpb-step-{$stepnum}'
                             style='{$style}'
                         >
-                            <span class='iswpcpb-number'>
-                                {$stepnum}
-                            </span>
+                            <a href='{$link}' class='iswpcpb-link iswp-tooltip'>
+                                <span class='iswp-tooltiptext'>
+                                    {$name}
+                                </span>
+                                <span class='iswpcpb-centerer'>";
+
+            if ($completed):
+                $template .= "
+                                    <span class='iswpcpb-text'>
+                                        {$name}
+                                    </span>";
+            else:
+                $template .= "
+                                    <span class='iswpcpb-number'>
+                                        {$stepnum}
+                                    </span>";
+            endif;
+            $template .= "
+                                </span>
+                            </a>
                         </div>";
 
             // Keep outputting steps until one is missing
@@ -198,7 +253,7 @@ class Iswp_Custom_Progress_Bar_Public
         // Text
         $percent = round($counter/5*100, 0);
         $template .= "
-                     <div class='iswpcpb-text'>{$percent}% Complete</div>";
+                     <div class='iswpcpb-percentage'>{$percent}% Complete</div>";
 
 	    $template .= "
                 </div>
@@ -263,44 +318,43 @@ class Iswp_Custom_Progress_Bar_Public
 
     // Step functions
 
-    private function step1(): bool
+    private function checkStep1($step_data): bool
     {
-        $quiz_id = (int)$this->plugin_options['s1'];
+        $quiz_id = $step_data['quiz_id'];
         $state = $this->user_passed_quiz($this->user_id, $quiz_id);
         return $state;
     }
 
-    private function step2(): bool
+    private function checkStep2($step_data): bool
     {
-        $course_id = (int)$this->plugin_options['s2'];
+        $course_id = $step_data['course_id'];
         $state = $this->user_completed_course($this->user_id, $course_id);
         return $state;
     }
 
-    private function step3(): bool
+    private function checkStep3($step_data): bool
     {
-        $quiz_id = (int)$this->plugin_options['s3'];
+        $quiz_id = $step_data['quiz_id'];
         $state = $this->user_passed_quiz($this->user_id, $quiz_id);
         return $state;
     }
 
-    private function step4(): bool
+    private function checkStep4($step_data): bool
     {
-        $form_id = (int)$this->plugin_options['s4'];
+        $form_id = $step_data['form_id'];
         $state = $this->user_submitted_form($this->user_id, $form_id);
         return $state;
     }
 
-    private function step5(): bool
+    private function checkStep5($step_data): bool
     {
-        $fees_paid = get_the_author_meta('_wsp_fees_paid', $this->user_id);
+        $fees_paid = $step_data['fees_paid'];
         if ($fees_paid == "" || is_null($fees_paid)) {
             return false;
         } else {
             return true;
         }
     }
-
 
     function learndash_user_get_course_completed($user_id = 0, $course_id = 0)
     {
@@ -338,5 +392,15 @@ class Iswp_Custom_Progress_Bar_Public
         }
 
         return $completed_on_timestamp;
+    }
+
+    function base_url() : string
+    {
+        if (isset($_SERVER['HTTPS'])) {
+            $protocol = ($_SERVER['HTTPS'] && $_SERVER['HTTPS'] != "off") ? "https" : "http";
+        } else {
+            $protocol = 'http';
+        }
+        return $protocol . "://" . $_SERVER['HTTP_HOST'];
     }
 }
