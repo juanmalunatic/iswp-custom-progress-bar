@@ -185,8 +185,14 @@ class Iswp_Custom_Progress_Bar_Public
             $steps[$key]['completed'] = $this->{"checkStep".$num}($data);
         }
 
-        // Add a link for every step
-
+        // This override can be used to test the design:
+        //$test_data = [true, false, true, false, true];
+        //$test_data = [true, true, true, true, true];
+        //$test_data = [false, false, false, false, false];
+        //$test_data = [true, true, true, true, true];
+        //foreach ($steps as $key => $data) {
+        //    $steps[$key]['completed'] = $test_data[$key];
+        //}
 
         return $this->pb_div_render($steps);
     }
@@ -215,6 +221,8 @@ class Iswp_Custom_Progress_Bar_Public
             $style  = 'background-color: ';
             $style .= $completed ? $bgcolor : 'transparent';
 
+            $tooltip_completed = $completed ? "Completed" : "Incomplete";
+
             $template .= "
                         <div
                             class='iswpcpb-step'
@@ -223,7 +231,7 @@ class Iswp_Custom_Progress_Bar_Public
                         >
                             <a href='{$link}' class='iswpcpb-link iswp-tooltip'>
                                 <span class='iswp-tooltiptext'>
-                                    {$name}
+                                    {$name}: {$tooltip_completed}
                                 </span>
                                 <span class='iswpcpb-centerer'>";
 
