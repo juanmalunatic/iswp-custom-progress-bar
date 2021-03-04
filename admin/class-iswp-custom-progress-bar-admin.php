@@ -167,23 +167,56 @@ class Iswp_Custom_Progress_Bar_Admin
      * @since    1.0.0
      */
 
-    public function validate($input)
+    public function validate ($incoming_data)
     {
 
         // To store valid values
-        $valid = array();
+        $validated = array();
 
-        // Steps
-        $valid['s1'] = ((isset($input['s1'])) && !empty($input['s1'])) ? $input['s1'] : 0;
-        $valid['s2'] = ((isset($input['s2'])) && !empty($input['s2'])) ? $input['s2'] : 0;
-        $valid['s3'] = ((isset($input['s3'])) && !empty($input['s3'])) ? $input['s3'] : 0;
-        $valid['s4'] = ((isset($input['s4'])) && !empty($input['s4'])) ? $input['s4'] : 0;
+        // Defaults
+        $default_data = [
+            'title'   => 'ISWP Wheelchair Service Provider (WSP) Certification',
+            'bgcolor' => '#b9f5ba',
 
-        // Design options
-        $valid['title']   = ((isset($input['title']))   && !empty($input['title']))   ? $input['title'] : "";
-        $valid['bgcolor'] = ((isset($input['bgcolor'])) && !empty($input['bgcolor'])) ? $input['bgcolor'] : "#25634d";
+            's1--name'    => 'Basic Knowledge Test',
+            's1--link'    => 'courses/iswp-basic-knowledge-test',
+            's1--quiz_id' => 2086,
 
-        return $valid;
+            's2--name'      => 'Ethics and Professionalism Course',
+            's2--link'      => 'courses/iswp-ethics-and-professionalism-course',
+            's2--course_id' => 10784,
+
+            's3--name'    => 'Ethics and Professionalism Test',
+            's3--link'    => 'courses/iswp-pre-test',
+            's3--quiz_id' => 2877,
+
+            's4--name'    => 'Supporting Documents',
+            's4--link'    => 'wsp-certification-initial-form',
+            's4--form_id' => 33,
+
+            's5--name' => 'Payment',
+            's5--link' => 'payment',
+        ];
+
+        // Only fields that appear on default_data will be stored.
+        // You can store additional fields using the following (outside of the loop)
+        // $this->storeVal('additional-field', $validated, $incoming_data, $default_data);
+        $fields = array_keys($default_data);
+        foreach ($fields as $key => $field) {
+            $this->storeVal($field, $validated, $incoming_data, $default_data);
+        }
+        return $validated;
+    }
+
+    public function storeVal($field_name, &$target, $values, $defaults)
+    {
+        $new_value = $values[$field_name];
+        $is_valid = (isset($new_value)) && !empty($new_value);
+        if ($is_valid) {
+            $target[$field_name] = $new_value;
+        } else {
+            $target[$field_name] = $defaults[$field_name];
+        }
     }
 
     /**

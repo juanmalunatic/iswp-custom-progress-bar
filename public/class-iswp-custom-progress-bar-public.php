@@ -147,31 +147,32 @@ class Iswp_Custom_Progress_Bar_Public
         $steps = [
             [
                 'code'      => 'Step 1',
-                'name'      => 'Basic Knowledge Test',
-                'link'      => 'courses/iswp-basic-knowledge-test',
-                'quiz_id'   => (int)$this->plugin_options['s1'],
+                'name'      => $this->plugin_options['s1--name'],
+                'link'      => $this->plugin_options['s1--link'],
+                'quiz_id'   => (int)$this->plugin_options['s1--quiz_id'],
             ],
             [
                 'code'      => 'Step 2',
-                'name'      => 'Ethics and Professionalism Course',
-                'link'      => 'courses/iswp-ethics-and-professionalism-course',
-                'course_id' => (int)$this->plugin_options['s2'],
+                'name'      => $this->plugin_options['s2--name'],
+                'link'      => $this->plugin_options['s2--link'],
+                'course_id' => (int)$this->plugin_options['s2--course_id'],
             ],
             [
                 'code'      => 'Step 3',
-                'name'      => 'Ethics and Professionalism Test',
-                'link'      => 'courses/iswp-pre-test',
-                'quiz_id'   => (int)$this->plugin_options['s3'],
+                'name'      => $this->plugin_options['s3--name'],
+                'link'      => $this->plugin_options['s3--link'],
+                'quiz_id'   => (int)$this->plugin_options['s3--quiz_id'],
             ],
             [
                 'code'      => 'Step 4',
-                'name'      => 'Supporting Documents',
-                'link'      => 'wsp-certification-initial-form',
-                'form_id'   => (int)$this->plugin_options['s4'],
+                'name'      => $this->plugin_options['s4--name'],
+                'link'      => $this->plugin_options['s4--link'],
+                'form_id'   => (int)$this->plugin_options['s4--form_id'],
             ],
             [
                 'code'      => 'Step 5',
-                'name'      => 'Payment',
+                'name'      => $this->plugin_options['s5--name'],
+                'link'      => $this->plugin_options['s5--link'],
                 'fees_paid' => get_the_author_meta('_wsp_fees_paid', $this->user_id),
             ]
         ];
@@ -242,7 +243,7 @@ class Iswp_Custom_Progress_Bar_Public
                             </a>
                         </div>";
 
-            // Keep outputting steps until one is missing
+            // Count how many have been completed so far
             if ($completed) {
                 $counter++;
             }
@@ -253,7 +254,9 @@ class Iswp_Custom_Progress_Bar_Public
         // Text
         $percent = round($counter/5*100, 0);
         $template .= "
-                     <div class='iswpcpb-percentage'>{$percent}% Complete</div>";
+                     <div class='iswpcpb-percentage'>
+                        {$percent}% Complete
+                     </div>";
 
 	    $template .= "
                 </div>
