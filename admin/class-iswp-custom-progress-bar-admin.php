@@ -164,14 +164,47 @@ class Iswp_Custom_Progress_Bar_Admin
     }
 
     /**
-     * Validate the settings on save.
+     * Update the plugin's options
      *
      * @since    1.0.0
      */
-
-    public function validate ($incoming_data)
+    public function options_update()
     {
+        // Different setting groups
+        register_setting(
+            "iswp_cpb__ogroup__steps_settings",
+            "iswp_cpb__oname__steps_settings",
+            [$this, 'validate_steps_settings']
+        );
 
+        register_setting(
+            "iswp_cpb__ogroup__email_settings",
+            "iswp_cpb__oname__email_settings",
+            [$this, 'validate_email_settings']
+        );
+
+        //register_setting(
+        //    'iswp-cpb__user_list',
+        //    $this->plugin_name,
+        //    [$this, 'validate_user_list']
+        //);
+
+    }
+
+    /**
+     * Validate the settings on save.
+     *
+     * @since    1.0.0
+     * @deprecated
+     */
+
+    public function validate ($incoming_data) : array
+    {
+        // Made useless by more specific functions
+    }
+
+    public function validate_steps_settings ($incoming_data) : array
+    {
         // To store valid values
         $validated = array();
 
@@ -210,6 +243,32 @@ class Iswp_Custom_Progress_Bar_Admin
         return $validated;
     }
 
+    public function validate_user_list($incoming_data) : array
+    {
+        $validated = [];
+        return $validated;
+    }
+
+    public function validate_email_settings ($incoming_data) : array
+    {
+        $validated = [];
+
+        $default_data = [
+            'email0--text' => "Greetings, [NAME]. \r\nYou have successfully paid for your certificate.",
+            'email1--text' => "Greetings, [NAME]. \n\rPlease remember to pay for your certificate in 6 months.",
+            'email2--text' => "Greetings, [NAME]. \n\rPlease remember to pay for your certificate in 3 months.",
+            'email3--text' => "Greetings, [NAME]. \n\rPlease remember to pay for your certificate in 1 week.",
+        ];
+
+        $fields = array_keys($default_data);
+        foreach ($fields as $key => $field) {
+            $this->storeVal($field, $validated, $incoming_data, $default_data);
+        }
+
+        return $validated;
+    }
+
+
     public function storeVal($field_name, &$target, $values, $defaults)
     {
         $new_value = $values[$field_name];
@@ -221,15 +280,6 @@ class Iswp_Custom_Progress_Bar_Admin
         }
     }
 
-    /**
-     * Update the plugin's options
-     *
-     * @since    1.0.0
-     */
-    public function options_update()
-    {
-        register_setting($this->plugin_name, $this->plugin_name, array($this, 'validate'));
-    }
 
     // Step 5 functionality: extra field on user-edit.php
 
