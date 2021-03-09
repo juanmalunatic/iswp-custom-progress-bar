@@ -127,6 +127,9 @@ class Iswp_Custom_Progress_Bar
 
         $this->loader = new Iswp_Custom_Progress_Bar_Loader();
 
+        // The class for email handling
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-iswp-cpb--email_queries.php';
+
     }
 
     /**
@@ -205,6 +208,13 @@ class Iswp_Custom_Progress_Bar
 
         $this->loader->add_action('init', $plugin_public, 'initialize');
         $this->loader->add_action('init', $plugin_public, 'register_shortcodes');
+
+        // Cron job to send emails
+        $email_handler = new Iswp_CPB__Email_Queries();
+        if (!wp_next_scheduled('iswpcpb__cron_hook__emails')) {
+            wp_schedule_event( time(), 'twicedaily', 'iswpcpb__cron_hook__emails' );
+        }
+        $this->loader->add_action('iswpcpb__cron_hook__emails', $email_handler, 'cronExecution');
     }
 
     /**

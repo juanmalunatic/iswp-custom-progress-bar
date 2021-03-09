@@ -15,7 +15,7 @@ error_reporting(E_ALL);
 // Load WordPress to have access to the core functionality
 if ( ! defined('ABSPATH') ) {
     /** Set up WordPress environment */
-    require_once( dirname( __FILE__ ) . '/../../../../wp-load.php' );
+    require_once(dirname(__FILE__) . '/../../../../wp-load.php');
 }
 
 if (!function_exists('iswp_cpb_log')) {
@@ -55,7 +55,7 @@ class Iswp_CPB__Email_Queries
         $this->weeks_one    = $this->getWeeksOne();
     }
 
-    public function executeRoutine()
+    public function executeRoutine() : int
     {
         //$this->DbgOutputTest();
         $this->populateUsers();
@@ -133,52 +133,29 @@ class Iswp_CPB__Email_Queries
         return $date;
     }
 
-    public function queryExample ()
-    {
-        $today = date("Y-m-d");
-        $date1 = date("YYYY-MM-DD", strtotime($today . "-1 Month"));
-        $date2 = date("YYYY-MM-DD", strtotime($today . "+1 Month"));
+    // public function DbgOutputTest ()
+    // {
+    //     echo "<pre>";
+    //     echo "Today: " . $this->today       ->format('Y-m-d') . "<br />";
+    //     echo "M6   : " . $this->months_six  ->format('Y-m-d') . "<br />";
+    //     echo "M3   : " . $this->months_three->format('Y-m-d') . "<br />";
+    //     echo "W1   : " . $this->weeks_one   ->format('Y-m-d') . "<br />";
+    //     echo "</pre>";
+    // }
 
-        $args = [
-            'post_type' => 'income',
-            'meta_query' => [
-                [
-                    'key' => 'income_dates',
-                    'value' =>  array($date1,$date2),
-                    'type'  => 'date',
-                    'compare' => 'BETWEEN'
-                ],
-            ]
-        ];
-    }
+    // public function DbgUserInfo (array $users)
+    // {
+    //     foreach ($users as $user) {
+    //         echo "<p> id:{$user->ID} | {$user->display_name} </p>";
+    //     }
+    // }
 
-    public function DbgOutputTest ()
-    {
-        echo "<pre>";
-        echo "Today: " . $this->today       ->format('Y-m-d') . "<br />";
-        echo "M6   : " . $this->months_six  ->format('Y-m-d') . "<br />";
-        echo "M3   : " . $this->months_three->format('Y-m-d') . "<br />";
-        echo "W1   : " . $this->weeks_one   ->format('Y-m-d') . "<br />";
-        echo "</pre>";
-    }
-
-    private function basicQuery (DateTime $date) : array
-    {
-        $date_fmt = $date->format('Y-m-d');
-        $user_query = new WP_User_Query(
-            [
-                'meta_key'     => '_wsp_payment_date',
-                'meta_value'   => $date,
-                'meta_compare' => '=',
-            ]
-        );
-
-        if (!empty($user_query->get_results())) {
-            return $user_query->get_results();
-        } else {
-            return [];
-        }
-    }
+    // public function DbgUpdateLastEmail($users, $date)
+    // {
+    //     foreach ($users as $user) {
+    //         $this->updateLastEmail($user->ID, $date);
+    //     }
+    // }
 
     private function queryPaymentDate (DateTime $date) : array
     {
@@ -290,30 +267,18 @@ class Iswp_CPB__Email_Queries
     public function parseTemplate($user, $template)
     {
         // Replace tokens such as [NAME] for an actual value
-        $text = str_replace('[NAME]', $user->display_name, $template);
-        return $text;
+        return str_replace('[NAME]', $user->display_name, $template);
     }
 
-    public function DbgUserInfo (array $users)
+    public function cronExecution ()
     {
-        foreach ($users as $user) {
-            echo "<p> id:{$user->ID} | {$user->display_name} </p>";
+        try {
+            $sent_emails = $this->executeRoutine();
+            iswp_cpb_log("RUN", "Email queries were executed. $sent_emails emails were sent.");
+        } catch (Exception $e) {
+            iswp_cpb_log("ERROR", $e->getMessage());
         }
-    }
 
-    public function DbgUpdateLastEmail($users, $date)
-    {
-        foreach ($users as $user) {
-            $this->updateLastEmail($user->ID, $date);
-        }
     }
-}
-
-$email_handler = new Iswp_CPB__Email_Queries();
-try {
-    $sent_emails = $email_handler->executeRoutine();
-    iswp_cpb_log("RUN", "Email queries were executed. $sent_emails emails were sent.");
-} catch (Exception $e) {
-    iswp_cpb_log("ERROR", $e->getMessage());
 }
 
