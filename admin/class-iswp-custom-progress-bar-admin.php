@@ -339,7 +339,7 @@ class Iswp_Custom_Progress_Bar_Admin
                         <td>
                             <legend class="screen-reader-text">
                                 <span>
-                                    Date of last payment (mm-dd-yyyy).
+                                    Date of last payment <b>(yyyy-mm-dd)</b>.
                                 </span>
                             </legend>
                             <label for     ="_wsp_payment_date">
@@ -352,7 +352,7 @@ class Iswp_Custom_Progress_Bar_Admin
                                 />
                                 <br />
                                 <span class="description">
-                                    <?php esc_attr_e('Input the date in a mm-dd-yyyy format.', $this->plugin_name); ?>
+                                    <?php esc_attr_e('Input the date in a yyyy-mm-dd format.', $this->plugin_name); ?>
                                 </span>
                             </label>
                         </td>

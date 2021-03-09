@@ -32,7 +32,7 @@
 
         // Activate datepicker
         $('.jqueryui-datepicker').datepicker({
-            dateFormat : 'mm-dd-yy',
+            dateFormat : 'yy-mm-dd',
             changeYear: true,
             changeMonth: true,
         });
