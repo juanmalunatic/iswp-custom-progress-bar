@@ -59,12 +59,12 @@ class Iswp_CPB__Email_Queries
     {
         //$this->DbgOutputTest();
         $this->populateUsers();
-        $tpl = get_option('iswp_cpb__oname__email_settings');
+        $email_settings = get_option('iswp_cpb__oname__email_settings');
 
-        $sent['today']        = $this->sendMails($this->users_today       , $tpl['email0--text']);
-        $sent['months_six']   = $this->sendMails($this->users_months_six  , $tpl['email1--text']);
-        $sent['months_three'] = $this->sendMails($this->users_months_three, $tpl['email2--text']);
-        $sent['weeks_one']    = $this->sendMails($this->users_weeks_one   , $tpl['email3--text']);
+        $sent['today']        = $this->sendMails($this->users_today       , $email_settings, 'email0');
+        $sent['months_six']   = $this->sendMails($this->users_months_six  , $email_settings, 'email1');
+        $sent['months_three'] = $this->sendMails($this->users_months_three, $email_settings, 'email2');
+        $sent['weeks_one']    = $this->sendMails($this->users_weeks_one   , $email_settings, 'email3');
 
         $sent_emails = 0;
         foreach ($sent as $key => $value) {
@@ -242,10 +242,17 @@ class Iswp_CPB__Email_Queries
         return true;
     }
 
-    public function sendMails (array $users, string $template)
+    public function sendMails (array $users, array $email_settings, string $key)
     {
         $mail_count = 0;
         $user_count = count($users);
+
+        $subject  = $email_settings[$key . "--subject"];
+        $template = $email_settings[$key . "--text"];
+
+        if (empty($subject) || trim($subject) === '') {
+            $subject = 'ISWP - Payment Reminder';
+        }
 
         /** @var WP_User $user */
         foreach ($users as $user) {
@@ -256,7 +263,7 @@ class Iswp_CPB__Email_Queries
             // Prepare the data
             $mail = [
                 'to'      => $user->user_email,
-                'subject' => 'ISWP - Payment Reminder',
+                'subject' => $subject,
                 'message' => $tpl_parsed,
             ];
 

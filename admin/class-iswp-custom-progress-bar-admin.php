@@ -254,10 +254,17 @@ class Iswp_Custom_Progress_Bar_Admin
         $validated = [];
 
         $default_data = [
-            'email0--text' => "Greetings, [NAME]. \r\nYou have successfully paid for your certificate.",
-            'email1--text' => "Greetings, [NAME]. \n\rPlease remember to pay for your certificate in 6 months.",
-            'email2--text' => "Greetings, [NAME]. \n\rPlease remember to pay for your certificate in 3 months.",
-            'email3--text' => "Greetings, [NAME]. \n\rPlease remember to pay for your certificate in 1 week.",
+            'email0--subject' => 'ISWP Certification - Successful Payment',
+            'email0--text'    => "Greetings, [NAME]. \r\nYou have successfully paid for your certificate.",
+
+            'email1--subject' => 'ISWP Certification - 6 Months Remaining',
+            'email1--text'    => "Greetings, [NAME]. \n\rPlease remember to pay for your certificate in 6 months.",
+
+            'email2--subject' => 'ISWP Certification - 3 Months Remaining',
+            'email2--text'    => "Greetings, [NAME]. \n\rPlease remember to pay for your certificate in 3 months.",
+
+            'email3--subject' => 'ISWP Certification - 1 Week Remaining',
+            'email3--text'    => "Greetings, [NAME]. \n\rPlease remember to pay for your certificate in 1 week.",
         ];
 
         $fields = array_keys($default_data);
