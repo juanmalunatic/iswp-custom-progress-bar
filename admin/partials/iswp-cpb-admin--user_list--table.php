@@ -18,22 +18,30 @@ class Example_List_Table extends WP_List_Table
      */
     public function prepare_items()
     {
+
         $columns  = $this->get_columns();
         $hidden   = $this->get_hidden_columns();
         $sortable = $this->get_sortable_columns();
 
+        // Sample data was hardcoded
         $data = $this->table_data();
+        // Sample data was sorted in memory, here we fetch it ordered.
         usort($data, array(&$this, 'sort_data'));
 
-        $perPage = 2;
+        $perPage = 10;
         $currentPage = $this->get_pagenum();
+
+        $users = $this->fetch_users($perPage, $currentPage);
+        $steps = $this->fetch_steps($users);
+
         $totalItems = count($data);
 
         $this->set_pagination_args(array(
             'total_items' => $totalItems,
-            'per_page' => $perPage
+            'per_page'    => $perPage
         ));
 
+        // Sample data was sliced here
         $data = array_slice($data, (($currentPage - 1) * $perPage), $perPage);
 
         $this->_column_headers = array($columns, $hidden, $sortable);
@@ -77,6 +85,50 @@ class Example_List_Table extends WP_List_Table
     public function get_sortable_columns()
     {
         return array('title' => array('title', false));
+    }
+
+    private function fetch_users ($limit = 10, $offset = 0)
+    {
+        global $wpdb;
+
+        // [Search]
+        $search = ( isset( $_REQUEST['s'] ) ) ? $_REQUEST['s'] : false;
+        $search = "Wang";
+        if ($search) {
+            $do_search  = '';
+            $do_search .= ($search) ? $wpdb->prepare("   display_name LIKE '%%%s%%' ", $search ) : '';
+            $do_search .= ($search) ? $wpdb->prepare("OR user_login   LIKE '%%%s%%' ", $search ) : '';
+            $do_search .= ($search) ? $wpdb->prepare("OR user_email   LIKE '%%%s%%' ", $search ) : '';
+            $do_search .= ($search) ? $wpdb->prepare("OR ID              = '%s'     ", $search ) : '';
+        }
+
+        // [Ordering]
+        $do_order = '';
+        $order_by = $this->orderby;
+        $asc_desc = $this->order;
+        if ( !is_null($order_by) || !is_null($asc_desc) ) {
+            $do_order = "ORDER BY $order_by $asc_desc";
+        }
+
+        $query = "
+            SELECT
+                `ID`, `display_name`, `user_login`
+            FROM $wpdb->users
+            WHERE 1 = 1
+            AND ($do_search)
+            $do_order
+            LIMIT $limit OFFSET $offset
+        ";
+
+        return $wpdb->get_results($query);
+    }
+
+    private function fetch_steps (array $users) : array
+    {
+        $a = "b";
+        foreach ($users as $user) {
+            // Fetch steps 1 through 5 and merge with existing dataset
+        }
     }
 
     /**
@@ -225,7 +277,6 @@ class Example_List_Table extends WP_List_Table
         if (!empty($_GET['order'])) {
             $order = $_GET['order'];
         }
-
 
         $result = strcmp($a[$orderby], $b[$orderby]);
 
