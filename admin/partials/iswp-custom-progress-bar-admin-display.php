@@ -48,30 +48,23 @@ $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'user_list';
         </a>
     </nav>
 
-    <!-- Updateable fields -->
-    <form method="post" name="iswp-custom-progress-bar-form" action="options.php">
+    <?php
 
-        <?php
-        settings_fields("iswp_cpb__ogroup__$active_tab");
-        $options  = get_option("iswp_cpb__oname__$active_tab");
-        ?>
+    // Actual contents
+    // Note that the forms are output in the respective sub-pages
+    // (*_settings POSTs to options.php, while user_list GETs to self)
 
-        <!-- Actual form contents -->
-        <?php
-        switch ($active_tab) {
-            case 'user_list':
-                require_once 'iswp-cpb-admin--user_list.php';
-                break;
-            case 'steps_settings':
-                require_once 'iswp-cpb-admin--steps_settings.php';
-                break;
-            case 'email_settings':
-                require_once 'iswp-cpb-admin--email_settings.php';
-                break;
-        }
-        ?>
+    switch ($active_tab) {
+        case 'user_list':
+            require_once 'iswp-cpb-admin--user_list.php';
+            break;
+        case 'steps_settings':
+            require_once 'iswp-cpb-admin--steps_settings.php';
+            break;
+        case 'email_settings':
+            require_once 'iswp-cpb-admin--email_settings.php';
+            break;
+    }
+    ?>
 
-        <?php submit_button('Save all changes', 'primary', 'submit', TRUE); ?>
-
-    </form>
 </div>
