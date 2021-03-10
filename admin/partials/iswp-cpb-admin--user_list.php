@@ -23,4 +23,8 @@ $wp_user_steps_table = new Example_List_Table();
     $wp_user_steps_table->search_box(__('Search'), 'iswp-cpb__search-box');
     $wp_user_steps_table->display();
     ?>
+
+    <?php
+        print_r($wp_user_steps_table->users_data);
+    ?>
 </form>

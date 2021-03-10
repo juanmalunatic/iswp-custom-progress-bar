@@ -76,8 +76,15 @@ class Iswp_Custom_Progress_Bar_Public
 
     public function initialize()
     {
-        $this->plugin_options = get_option($this->plugin_name);
+        //$this->plugin_options = get_option($this->plugin_name);
+        $this->plugin_options = get_option('iswp_cpb__oname__steps_settings');
         $this->user_id = get_current_user_id();
+    }
+
+    public function initialize_external ($user_id)
+    {
+        $this->user_id = $user_id;
+        $this->plugin_options = get_option('iswp_cpb__oname__steps_settings');
     }
 
     /**
@@ -139,7 +146,7 @@ class Iswp_Custom_Progress_Bar_Public
         add_shortcode('iswp_custom_progress_bar', array($this, 'progress_bar_draw'));
     }
 
-    public function progress_bar_draw(): string
+    public function fetch_steps () : array
     {
         // This function is currently only used on pages in which the user is logged in.
 
@@ -184,6 +191,13 @@ class Iswp_Custom_Progress_Bar_Public
             $num = $key + 1;
             $steps[$key]['completed'] = $this->{"checkStep".$num}($data);
         }
+
+        return $steps;
+    }
+
+    public function progress_bar_draw(): string
+    {
+        $steps = $this->fetch_steps();
 
         // This override can be used to test the design:
         //$test_data = [true, false, true, false, true];

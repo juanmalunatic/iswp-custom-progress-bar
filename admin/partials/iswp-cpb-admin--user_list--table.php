@@ -1,16 +1,23 @@
 <?php
 
 // WP_List_Table is not loaded automatically so we need to load it in our application
-
 if (!class_exists('WP_List_Table')) {
     require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
+
+// To  check the steps' completion
+require_once plugin_dir_path(dirname(__FILE__)) . '../public/class-iswp-custom-progress-bar-public.php';
 
 /**
  * Create a new table class that will extend the WP_List_Table
  */
 class Example_List_Table extends WP_List_Table
 {
+    /**
+     * @var array|mixed
+     */
+    public $users_data;
+
     /**
      * Prepare the items for the table to process
      *
@@ -31,8 +38,9 @@ class Example_List_Table extends WP_List_Table
         $perPage = 10;
         $currentPage = $this->get_pagenum();
 
-        $users = $this->fetch_users($perPage, $currentPage);
-        $steps = $this->fetch_steps($users);
+        $users       = $this->fetch_users($perPage, $currentPage);
+        $users_full  = $this->fetch_users_steps($users);
+        $this->users_data = $users_full;
 
         $totalItems = count($data);
 
@@ -123,12 +131,24 @@ class Example_List_Table extends WP_List_Table
         return $wpdb->get_results($query);
     }
 
-    private function fetch_steps (array $users) : array
+    private function fetch_users_steps (array $users) : array
     {
-        $a = "b";
-        foreach ($users as $user) {
-            // Fetch steps 1 through 5 and merge with existing dataset
+        $progbar = new Iswp_Custom_Progress_Bar_Public('iswp-custom-progress-bar', '1.0.0');
+
+        foreach ($users as $key => $user) {
+
+            $progbar->initialize_external($user->ID);
+            $steps = $progbar->fetch_steps();
+
+            $user->steps = [
+                0 => $steps[0]['completed'],
+                1 => $steps[1]['completed'],
+                2 => $steps[2]['completed'],
+                3 => $steps[3]['completed'],
+                4 => $steps[4]['completed'],
+            ];
         }
+        return $users;
     }
 
     /**
