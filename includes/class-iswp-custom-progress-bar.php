@@ -130,6 +130,9 @@ class Iswp_Custom_Progress_Bar
         // The class for email handling
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-iswp-cpb--email_queries.php';
 
+        // The class for certificate handling
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-iswp-cpb--certificate.php';
+
     }
 
     /**
@@ -187,6 +190,12 @@ class Iswp_Custom_Progress_Bar
         // Save the fields' values when updated
         $this->loader->add_action('personal_options_update', $plugin_admin, 'save_extra_user_profile_fields');
         $this->loader->add_action('edit_user_profile_update', $plugin_admin, 'save_extra_user_profile_fields');
+
+        // Register the action that handles the certificate - when logged in
+        $certHandler = new Iswp_CPB__Certificate();
+        // Has to be called through admin_post to get USER_ID
+        // https://wordpress.org/support/topic/doesnt-call-user-information-to-include-wp-load-php-in-an-external-php-file/
+        $this->loader->add_action('admin_post_iswp-cpb__certificate', $certHandler, 'execute');
     }
 
     /**
@@ -215,6 +224,7 @@ class Iswp_Custom_Progress_Bar
             wp_schedule_event( time(), 'twicedaily', 'iswpcpb__cron_hook__emails' );
         }
         $this->loader->add_action('iswpcpb__cron_hook__emails', $email_handler, 'cronExecution');
+
     }
 
     /**

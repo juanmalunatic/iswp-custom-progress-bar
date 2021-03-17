@@ -133,7 +133,7 @@
     display:flex;
     align-items: center;
     justify-content: center;
-
+    flex-direction: column;
     font-family: "Helvetica", serif;
     font-size: 13px !important;
     color: #3b4563 !important;

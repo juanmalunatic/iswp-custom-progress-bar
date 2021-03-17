@@ -273,14 +273,34 @@ class Iswp_Custom_Progress_Bar_Public
         $template .= "
 	                </div>"; // end bar
 
-        // Text
+        // ----------------------------------------------------
+        // Completion section
+        // ----------------------------------------------------
         $percent = round($counter/5*100, 0);
+
+        // Check whether we display the certificate link
+        $certificate = "";
+        if ($percent == 100 || $percent == 40)
+        {
+            $url = $this->base_url() . '/wp-content/plugins/iswp-custom-progress-bar/includes/class-iswp-cpb--certificate.php';
+            $url = $this->base_url() . '/wp-admin/admin-post.php?action=iswp-cpb__certificate';
+
+            $certificate = "
+                        <div class='iswpcpb-percentage-certificate'>
+                            <a href={$url}>
+                                Download Certificate
+                            </a>
+                        </div>";
+        }
+
+        // Display % and certificate
         $template .= "
                      <div class='iswpcpb-percentage'>
-                        {$percent}% Complete
-                     </div>";
-
-	    $template .= "
+                        <div class='iswpcpb-percentage-text'>
+                            {$percent}% Complete
+                        </div>
+                        {$certificate}
+                    </div>
                 </div>
             </div>";
 
