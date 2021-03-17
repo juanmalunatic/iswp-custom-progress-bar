@@ -230,7 +230,7 @@ class Iswp_Custom_Progress_Bar_Public
             $stepnum   = $key + 1;
             $completed = $step_data['completed'];
             $name      = $step_data['name'];
-            $link      = $this->base_url() . '/' . $step_data['link'];
+            $link      = $step_data['link'];
 
             $style  = 'background-color: ';
             $style .= $completed ? $bgcolor : 'transparent';
@@ -280,15 +280,12 @@ class Iswp_Custom_Progress_Bar_Public
 
         // Check whether we display the certificate link
         $certificate = "";
-        if ($percent == 100 || $percent == 40)
-        {
-            $url = $this->base_url() . '/wp-content/plugins/iswp-custom-progress-bar/includes/class-iswp-cpb--certificate.php';
+        if ($percent == 100) {
             $url = $this->base_url() . '/wp-admin/admin-post.php?action=iswp-cpb__certificate';
-
             $certificate = "
                         <div class='iswpcpb-percentage-certificate'>
                             <a href={$url}>
-                                Download Certificate
+                                View Certificate
                             </a>
                         </div>";
         }

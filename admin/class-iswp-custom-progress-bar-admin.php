@@ -214,23 +214,23 @@ class Iswp_Custom_Progress_Bar_Admin
             'bgcolor' => '#b9f5ba',
 
             's1--name'    => 'Basic Knowledge Test',
-            's1--link'    => 'courses/iswp-basic-knowledge-test',
+            's1--link'    => 'https://wheelchairnetwork.org/courses/iswp-basic-knowledge-test',
             's1--quiz_id' => 2086,
 
             's2--name'      => 'Ethics and Professionalism Course',
-            's2--link'      => 'courses/iswp-ethics-and-professionalism-course',
+            's2--link'      => 'https://wheelchairnetwork.org/courses/iswp-ethics-and-professionalism-course',
             's2--course_id' => 10784,
 
             's3--name'    => 'Ethics and Professionalism Test',
-            's3--link'    => 'courses/iswp-pre-test',
+            's3--link'    => 'https://wheelchairnetwork.org/courses/iswp-pre-test',
             's3--quiz_id' => 2877,
 
             's4--name'    => 'Supporting Documents',
-            's4--link'    => 'wsp-certification-initial-form',
+            's4--link'    => 'https://wheelchairnetwork.org/wsp-certification-initial-form',
             's4--form_id' => 33,
 
             's5--name' => 'Payment',
-            's5--link' => 'payment',
+            's5--link' => 'https://wheelchairnetwork.org/payment',
         ];
 
         // Only fields that appear on default_data will be stored.

@@ -97,7 +97,7 @@ $option_name = 'iswp_cpb__oname__steps_settings';
         <!-- S1: Link -->
         <legend class="screen-reader-text">
             <span>
-                Link that takes to the step, without the site's domain (without https://wheelchairnetwork.org).
+                
             </span>
         </legend>
         <label for      ="<?= $option_name ?>[s1--link]">
@@ -108,7 +108,7 @@ $option_name = 'iswp_cpb__oname__steps_settings';
                    class="regular-text"
             />
             <span class="description">
-                <?php esc_attr_e('Link that takes to the step, without the site\'s domain (without https://wheelchairnetwork.org).', $option_name); ?>
+                <?php esc_attr_e('Link that takes to the step. Include the site\'s domain (https://wheelchairnetwork.org) if relevant.', $option_name); ?>
             </span>
         </label>
         <br />
@@ -162,7 +162,7 @@ $option_name = 'iswp_cpb__oname__steps_settings';
         <!-- S2: Link -->
         <legend class="screen-reader-text">
             <span>
-                Link that takes to the step, without the site's domain (without https://wheelchairnetwork.org).
+                
             </span>
         </legend>
         <label for      ="<?= $option_name ?>[s2--link]">
@@ -173,7 +173,7 @@ $option_name = 'iswp_cpb__oname__steps_settings';
                    class="regular-text"
             />
             <span class="description">
-                <?php esc_attr_e('Link that takes to the step, without the site\'s domain (without https://wheelchairnetwork.org).', $option_name); ?>
+                <?php esc_attr_e('Link that takes to the step. Include the site\'s domain (https://wheelchairnetwork.org) if relevant.', $option_name); ?>
             </span>
         </label>
         <br />
@@ -227,7 +227,7 @@ $option_name = 'iswp_cpb__oname__steps_settings';
         <!-- S3: Link -->
         <legend class="screen-reader-text">
             <span>
-                Link that takes to the step, without the site's domain (without https://wheelchairnetwork.org).
+                
             </span>
         </legend>
         <label for      ="<?= $option_name ?>[s3--link]">
@@ -238,7 +238,7 @@ $option_name = 'iswp_cpb__oname__steps_settings';
                    class="regular-text"
             />
             <span class="description">
-                <?php esc_attr_e('Link that takes to the step, without the site\'s domain (without https://wheelchairnetwork.org).', $option_name); ?>
+                <?php esc_attr_e('Link that takes to the step. Include the site\'s domain (https://wheelchairnetwork.org) if relevant.', $option_name); ?>
             </span>
         </label>
         <br />
@@ -292,7 +292,7 @@ $option_name = 'iswp_cpb__oname__steps_settings';
         <!-- S4: Link -->
         <legend class="screen-reader-text">
             <span>
-                Link that takes to the step, without the site's domain (without https://wheelchairnetwork.org).
+                Link that takes to the step. Include the site's domain (https://wheelchairnetwork.org) if relevant.
             </span>
         </legend>
         <label for      ="<?= $option_name ?>[s4--link]">
@@ -303,7 +303,7 @@ $option_name = 'iswp_cpb__oname__steps_settings';
                    class="regular-text"
             />
             <span class="description">
-                <?php esc_attr_e('Link that takes to the step, without the site\'s domain (without https://wheelchairnetwork.org).', $option_name); ?>
+                <?php esc_attr_e('Link that takes to the step. Include the site\'s domain (https://wheelchairnetwork.org) if relevant.', $option_name); ?>
             </span>
         </label>
         <br />
@@ -338,7 +338,7 @@ $option_name = 'iswp_cpb__oname__steps_settings';
         <!-- S5: Link -->
         <legend class="screen-reader-text">
             <span>
-                Link that takes to the step, without the site's domain (without https://wheelchairnetwork.org).
+                Link that takes to the step. Include the site's domain (https://wheelchairnetwork.org) if relevant.
             </span>
         </legend>
         <label for      ="<?= $option_name ?>[s5--link]">
@@ -349,7 +349,7 @@ $option_name = 'iswp_cpb__oname__steps_settings';
                    class="regular-text"
             />
             <span class="description">
-                <?php esc_attr_e('Link that takes to the step, without the site\'s domain (without https://wheelchairnetwork.org).', $this->plugin_name); ?>
+                <?php esc_attr_e('Link that takes to the step. Include the site\'s domain (https://wheelchairnetwork.org) if relevant.', $this->plugin_name); ?>
             </span>
         </label>
         <br />
