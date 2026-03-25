@@ -363,3 +363,101 @@ User meta:
   - profile page markup
   - mail delivery
   - certificate assets
+
+
+== Short overview for dummies ===
+
+The idea is that every user must complete 5 steps to earn a certificate.
+Step 1 is a test, step 2 a course, step 3 a test,
+step 4 a gravity form with supporting documents and step 5 a (manually managed) payment system.
+
+The plugin is configured in: /wp-admin/tools.php?page=iswp-custom-progress-bar
+   - Has a nice admin table overview of which users have completed which steps
+   - Has the settings of which courses / forms / quizzes are used
+     No autocomplete, admins must input id numbers.
+   - Has the email template settings
+     At some point emails are sent, M0, M1, M2, M3 (4 mails).
+
+ Admin ticks a checkbox manually when users pay using WordPress' default
+ user edition screen:
+   https://wheelchairnetwork.test/wp-admin/user-edit.php?user_id=4912.
+
+ One can use the shortcode [iswp_custom_progress_bar] anywhere
+ to show the user's progress. Default config is to put it in the profile page.
+
+
+
+
+======== Default config =======
+
+## Add the shortcode in the page set up to be the user's profile
+access domain.test/profile, edit page, paste [iswp_custom_progress_bar]
+default is
+  https://wheelchairnetwork.test/wp-admin/post.php?post=2022&action=edit
+
+## Configure the steps for the plugin in
+```
+wp-admin/tools.php?page=iswp-custom-progress-bar.php&tab=steps_settings
+```
+
+Design settings
+---------------
+Title shown above the progress bar.
+IWSP Wheelchair Service Provider (WSP) Certifications
+
+Background color for the bar's progress.
+#b9f5ba
+
+Steps
+---------------
+> Step 1:
+
+2086
+  Quiz ID for the ISWP Basic Knowledge Test - English
+
+Basic Knowledge Test
+ Name to display in the bar
+
+courses/iswp-basic-knowledge-test
+ Link that takes to the step. Include the site's domain (https://wheelchairnetwork.org) if relevant.
+
+> Step 2:
+
+10784
+ Course ID for the Ethics and Professionalism Course
+
+Ethics and Professionalism Course
+ Name to display in the bar
+
+courses/iswp-ethics-and-professionalism-course
+ Link that takes to the step. Include the site's domain (https://wheelchairnetwork.org) if relevant.
+
+> Step 3:
+
+2877
+ Quiz ID for the Ethics and Professionalism Test
+
+Ethics and Professionalism Test
+ Name to display in the bar
+
+courses/iswp-pre-test
+ Link that takes to the step. Include the site's domain (https://wheelchairnetwork.org) if relevant.
+
+> Step 4:
+
+33
+ Gravity Form ID for the WSP File Upload
+
+Supporting Documents
+ Name to display in the bar
+
+wsp-certification-initial-form
+ Link that takes to the step. Include the site's domain (https://wheelchairnetwork.org) if relevant.
+
+> Step 5
+
+Payment
+ Name to display in the bar
+
+payment
+ Link that takes to the step. Include the site's domain (https://wheelchairnetwork.org) if relevant.
